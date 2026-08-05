@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Karthik Galala — Network &amp; Security Engineering Portfolio</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg: #050b14;
+    --surface: #0b1320;
+    --surface-2: #101a2a;
+    --line: #1d3557;
+    --line-soft: #13253d;
+    --text: #e6f1ff;
+    --text-dim: #9bb4d1;
+    --text-faint: #5f7ea3;
+    --mint: #4cc9f0;
+    --mint-dim: #2563eb;
+    --amber: #e3b94a;
+    --red: #ef6b5e;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --disp: 'Space Grotesk', sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(76,201,240,0.08), transparent 40%),
+      radial-gradient(circle at 85% 60%, rgba(37,99,235,0.08), transparent 45%),
+      linear-gradient(rgba(76,201,240,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(76,201,240,0.04) 1px, transparent 1px);
+    background-size: auto, auto, 44px 44px, 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 55%, transparent 100%);
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 55%, transparent 100%);
+    pointer-events:none;
+    z-index:0;
+  }
+  /* ambient network scan sweep — subtle, evokes a monitored/defended network */
+  body::after{
+    content:"";
+    position: fixed; left:0; right:0; height: 140px; top:-140px;
+    background: linear-gradient(180deg, transparent, rgba(76,201,240,0.06), transparent);
+    pointer-events:none; z-index:0;
+    animation: scanSweep 9s linear infinite;
+  }
+  @keyframes scanSweep {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(calc(100vh + 280px)); }
+  }
+  a { color: inherit; }
+  ::selection { background: var(--mint); color: #06110c; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background: var(--bg); }
+  ::-webkit-scrollbar-thumb{ background: var(--line); border-radius:6px; }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 28px; position:relative; z-index:1; }
+
+  /* NAV */
+  nav {
+    position: sticky; top:0; z-index: 50;
+    background: rgba(11,15,20,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-inner {
+    max-width: 980px; margin:0 auto; padding: 14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .prompt-logo {
+    font-family: var(--mono); font-size: 13.5px; color: var(--mint);
+    white-space: nowrap;
+  }
+  .prompt-logo .path { color: var(--text-dim); }
+  .nav-links { display:flex; gap: 26px; font-family: var(--mono); font-size: 12.5px; }
+  .nav-links a { color: var(--text-dim); text-decoration:none; transition: color .15s; position:relative; }
+  .nav-links a:hover, .nav-links a:focus-visible { color: var(--mint); outline:none; }
+  .nav-links a::before { content: "./"; color: var(--text-faint); }
+  #navToggle { display:none; }
+
+  /* HERO */
+  .hero {
+    padding: 86px 0 60px;
+    display:grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items:center;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; color: var(--mint);
+    letter-spacing: 0.06em; display:flex; align-items:center; gap:9px; margin-bottom:18px;
+  }
+  .eyebrow .dot { width:7px; height:7px; border-radius:50%; background: var(--mint); box-shadow: 0 0 8px var(--mint); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+  h1.name {
+    font-family: var(--disp); font-weight:700;
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1.05; letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+  .role {
+    font-family: var(--mono); font-size: 15px; color: var(--text-dim);
+    margin-bottom: 22px;
+  }
+  .role .cursor { display:inline-block; width:8px; height:1.1em; background: var(--mint); margin-left:2px; vertical-align:text-bottom; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-copy { color: var(--text-dim); font-size: 15px; max-width: 480px; margin-bottom: 28px; }
+  .hero-copy strong { color: var(--text); font-weight:600; }
+
+  .cta-row { display:flex; gap:12px; flex-wrap:wrap; }
+  .btn {
+    font-family: var(--mono); font-size: 13px; padding: 11px 18px;
+    border-radius: 4px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    border: 1px solid var(--line); transition: all .15s;
+  }
+  .btn-primary { background: var(--mint); color: #06120c; border-color: var(--mint); font-weight:600; }
+  .btn-primary:hover { background:#7bf0bd; }
+  .btn-ghost { color: var(--text-dim); }
+  .btn-ghost:hover { color: var(--mint); border-color: var(--mint-dim); }
+
+  /* TERMINAL WIDGET */
+  .term {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .term-bar {
+    display:flex; align-items:center; gap:8px;
+    padding: 10px 14px; background: var(--surface-2);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .term-dot { width:10px; height:10px; border-radius:50%; }
+  .term-bar .term-title { margin-left: 8px; font-family: var(--mono); font-size:11.5px; color: var(--text-faint); }
+  .term-body { padding: 16px 16px 18px; font-family: var(--mono); font-size: 12px; height: 250px; overflow:hidden; position:relative; }
+  .term-line { white-space: nowrap; opacity:0; animation: fadeIn .4s forwards; margin-bottom: 5px; }
+  .term-line .ts { color: var(--text-faint); }
+  .term-line .ip { color: #7fb8e6; }
+  .term-line .ok { color: var(--mint); }
+  .term-line .warn { color: var(--amber); }
+  .term-line .crit { color: var(--red); font-weight:600; }
+  @keyframes fadeIn { to { opacity:1; } }
+  .term-body::after {
+    content:""; position:absolute; left:0; right:0; bottom:0; height: 46px;
+    background: linear-gradient(transparent, var(--surface));
+  }
+
+  /* SECTIONS */
+  section { padding: 54px 0; border-top: 1px solid var(--line-soft); }
+  .sec-head { display:flex; align-items:baseline; gap: 14px; margin-bottom: 28px; }
+  .sec-cmd {
+    font-family: var(--mono); font-size: 12.5px; color: var(--text-faint);
+  }
+  .sec-cmd .p { color: var(--mint); }
+  h2.sec-title {
+    font-family: var(--disp); font-weight:600; font-size: 22px; letter-spacing: -0.01em;
+  }
+
+  /* OBJECTIVE */
+  .objective-block {
+    background: var(--surface); border:1px solid var(--line-soft); border-left: 3px solid var(--mint);
+    border-radius: 6px; padding: 22px 24px; color: var(--text-dim); font-size: 14.5px;
+    max-width: 760px;
+  }
+  .objective-block .out-label { font-family: var(--mono); font-size:11px; color: var(--text-faint); margin-bottom:10px; display:block; }
+
+  /* EDUCATION */
+  .edu-list { display:flex; flex-direction:column; }
+  .edu-row {
+    display:grid; grid-template-columns: 130px 1fr auto; gap: 18px; align-items:baseline;
+    padding: 16px 0; border-bottom: 1px solid var(--line-soft);
+  }
+  .edu-row:last-child { border-bottom:none; }
+  .edu-date { font-family: var(--mono); font-size:12.5px; color: var(--mint); }
+  .edu-degree { font-weight:600; font-size:15px; color: var(--text); }
+  .edu-school { color: var(--text-dim); font-size:13.5px; margin-top:2px; }
+  .edu-score { font-family: var(--mono); font-size:13px; color: var(--amber); text-align:right; white-space:nowrap; }
+
+  /* SKILLS */
+  .skills-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 22px 40px; }
+  .skill-cat { border-left: 2px solid var(--line); padding-left: 16px; }
+  .skill-cat h3 {
+    font-family: var(--mono); font-size: 11.5px; color: var(--mint);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;
+  }
+  .chip-row { display:flex; flex-wrap:wrap; gap: 7px; }
+  .chip {
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+    background: var(--surface); border: 1px solid var(--line-soft);
+    padding: 5px 10px; border-radius: 4px;
+  }
+
+  /* PROJECTS */
+  .project-card {
+    background: var(--surface); border: 1px solid var(--line-soft); border-radius: 8px;
+    padding: 26px 28px; margin-bottom: 20px; position:relative; overflow:hidden;
+  }
+  .project-card::before {
+    content:""; position:absolute; top:0; left:0; width:3px; height:100%; background: var(--mint-dim);
+  }
+  .project-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:14px; flex-wrap:wrap; }
+  .project-title { font-family: var(--disp); font-weight:600; font-size: 17px; }
+  .project-tag { font-family: var(--mono); font-size:10.5px; color: var(--bg); background: var(--mint); padding: 3px 8px; border-radius:3px; font-weight:600; white-space:nowrap; height:fit-content; }
+  .project-card ul { padding-left: 18px; color: var(--text-dim); font-size: 13.8px; }
+  .project-card li { margin-bottom: 5px; }
+  .tool-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .tool-tags span {
+    font-family: var(--mono); font-size:11px; color: var(--text-faint);
+    border: 1px solid var(--line-soft); padding: 3px 8px; border-radius: 3px;
+  }
+
+  /* CERTS */
+  .cert-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cert-card {
+    background: var(--surface); border:1px solid var(--line-soft); border-radius:6px; padding:18px 20px;
+  }
+  .cert-card.wide { grid-column: 1 / -1; }
+  .cert-card h4 { font-size: 14.5px; font-weight:600; margin-bottom: 6px; }
+  .cert-card p { font-size: 13px; color: var(--text-dim); }
+  .cert-card .badge {
+    display:inline-block; margin-top:10px; font-family: var(--mono); font-size:11px;
+    color: var(--amber); border:1px solid rgba(227,185,74,0.3); padding: 3px 9px; border-radius: 20px;
+  }
+  .cert-sub-list { margin-top:8px; padding-left:16px; color:var(--text-dim); font-size:12.8px; }
+  .cert-sub-list li { margin-bottom:3px; }
+
+  /* RESUME */
+  .resume-box {
+    background: var(--surface); border: 1px solid var(--line-soft); border-radius: 8px;
+    overflow: hidden;
+  }
+  .resume-box-bar {
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    padding: 12px 18px; background: var(--surface-2); border-bottom: 1px solid var(--line-soft);
+  }
+  .resume-box-title { font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); }
+  .resume-box-actions { display:flex; gap: 18px; font-family: var(--mono); font-size: 12.5px; }
+  .resume-box-actions a { text-decoration:none; color: var(--mint); }
+  .resume-box-actions a:hover { color: #7bf0bd; }
+  .resume-frame { width:100%; height: 640px; border: none; display:block; background: #fff; }
+  @media (max-width: 640px) { .resume-frame { height: 420px; } }
+
+  /* ACHIEVEMENTS */
+  .ach-list { display:flex; flex-direction:column; gap:0; }
+  .ach-row {
+    display:flex; gap:16px; padding: 14px 0; border-bottom: 1px solid var(--line-soft);
+    align-items:flex-start;
+  }
+  .ach-row:last-child { border-bottom:none; }
+  .ach-num { font-family: var(--mono); color: var(--mint-dim); font-size:13px; padding-top:1px; }
+  .ach-row p { color: var(--text-dim); font-size: 14px; }
+  .ach-row p strong { color: var(--text); font-weight:600; }
+  .ach-row p a { color: var(--mint); text-decoration:none; }
+  .ach-row p a:hover { text-decoration:underline; }
+
+  /* FOOTER */
+  footer { padding: 56px 0 60px; text-align:center; }
+  footer .prompt-logo { justify-content:center; display:flex; margin-bottom:18px; }
+  .footer-links { display:flex; justify-content:center; gap: 22px; margin-bottom: 22px; font-family: var(--mono); font-size:13px; flex-wrap:wrap; }
+  .footer-links a { text-decoration:none; color: var(--text-dim); transition: color .15s; }
+  .footer-links a:hover { color: var(--mint); }
+  footer .fine { font-family: var(--mono); font-size: 11px; color: var(--text-faint); }
+
+  /* RESPONSIVE */
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; padding-top: 60px; }
+    .term-body { height: 210px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .cert-grid { grid-template-columns: 1fr; }
+    .nav-links { display:none; }
+  }
+  @media (max-width: 560px) {
+    .edu-row { grid-template-columns: 1fr; gap:4px; }
+    .edu-score { text-align:left; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+
+/* Advanced blue-team cyber background */
+body{
+  overflow-x:hidden;
+}
+
+body::before{
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(76,201,240,0.14), transparent 28%),
+    radial-gradient(circle at 80% 20%, rgba(37,99,235,0.16), transparent 30%),
+    radial-gradient(circle at 50% 70%, rgba(76,201,240,0.10), transparent 34%),
+    linear-gradient(rgba(76,201,240,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(76,201,240,0.035) 1px, transparent 1px);
+  background-size: auto, auto, auto, 48px 48px, 48px 48px;
+  animation: gridPulse 16s ease-in-out infinite alternate;
+}
+
+body::after{
+  height: 180px;
+  background: linear-gradient(180deg, transparent, rgba(76,201,240,0.10), transparent);
+  animation: scanSweep 7s linear infinite;
+}
+
+@keyframes gridPulse{
+  0%{ filter: brightness(1); transform: scale(1); }
+  100%{ filter: brightness(1.08); transform: scale(1.01); }
+}
+
+/* floating network nodes */
+.cyber-bg{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+
+.cyber-bg span{
+  position:absolute;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#4cc9f0;
+  box-shadow:0 0 12px #4cc9f0, 0 0 24px rgba(76,201,240,.45);
+  opacity:.7;
+  animation:floatNode linear infinite;
+}
+
+.cyber-bg span::before{
+  content:"";
+  position:absolute;
+  width:120px;
+  height:1px;
+  background:linear-gradient(90deg, rgba(76,201,240,.35), transparent);
+  transform-origin:left center;
+}
+
+@keyframes floatNode{
+  from{ transform:translateY(110vh) translateX(0) scale(.8); opacity:0; }
+  10%{ opacity:.8; }
+  to{ transform:translateY(-20vh) translateX(20px) scale(1.1); opacity:0; }
+}
+
+/* hero glow */
+.hero{
+  position:relative;
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:-40px -20px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(76,201,240,.12), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(37,99,235,.14), transparent 32%);
+  filter:blur(24px);
+  z-index:-1;
+}
+
+.term{
+  box-shadow:0 0 0 1px rgba(76,201,240,.08), 0 24px 70px rgba(0,0,0,.6);
+}
+
+.project-card{
+  transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.project-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(76,201,240,.45);
+  box-shadow:0 12px 36px rgba(37,99,235,.18);
+}
+
+.btn-primary{
+  box-shadow:0 0 24px rgba(76,201,240,.28);
+}
+</style>
+</head>
+<body><div class="cyber-bg"><span style="left:8%; top:12%; animation-duration:18s;"></span><span style="left:16%; top:78%; animation-duration:22s;"></span><span style="left:28%; top:28%; animation-duration:20s;"></span><span style="left:40%; top:65%; animation-duration:24s;"></span><span style="left:52%; top:18%; animation-duration:19s;"></span><span style="left:64%; top:82%; animation-duration:26s;"></span><span style="left:76%; top:42%; animation-duration:21s;"></span><span style="left:88%; top:14%; animation-duration:23s;"></span><span style="left:92%; top:72%; animation-duration:25s;"></span><span style="left:34%; top:90%; animation-duration:27s;"></span><span style="left:58%; top:50%; animation-duration:17s;"></span><span style="left:72%; top:8%; animation-duration:29s;"></span></div>
+<nav>
+<div class="nav-inner">
+<div class="prompt-logo">karthik<span class="path">@soc</span>:~$</div>
+<div class="nav-links">
+<a href="#objective">about</a>
+<a href="#education">education</a>
+<a href="#skills">skills</a>
+<a href="#projects">projects</a>
+<a href="#certs">certs</a>
+<a href="#contact">contact</a>
+</div>
+</div>
+</nav>
+<div class="wrap">
+<!-- HERO -->
+<section class="hero" style="border-top:none; padding-bottom:60px;">
+<div>
+<div class="eyebrow">BLUE TEAM OPERATIONS: ACTIVE · <span class="dot"></span> OPEN TO NETWORK &amp; SECURITY ENGINEERING ROLES</div>
+<h1 class="name">Karthik Galala</h1>
+<div class="role">Network &amp; Security Engineering <span class="cursor"></span></div>
+<p class="hero-copy">Final-year ECE student focused on <strong>Network Security, SIEM Monitoring, and Blue Team Operations</strong>. Hands-on with <strong>Splunk, Wireshark, Nmap, Kali Linux, and packet analysis</strong>, with practical experience in log investigation, firewall monitoring, and threat detection. Seeking an entry-level Network Security, SOC, or Blue Team role to monitor, analyze, and defend enterprise environments.</p>
+<div class="cta-row">
+<a class="btn btn-primary" href="mailto:karthikgalala26@gmail.com">Email me →</a>
+<a class="btn btn-ghost" href="#projects">View projects</a>
+<a class="btn btn-ghost" href="https://drive.google.com/file/d/1ywvtvn9WxZ5sJ9Yple8saCttqLWU4DYU/view?usp=sharing" rel="noopener" target="_blank">Resume (PDF) ↗</a>
+</div>
+<div class="cta-row" style="margin-top:10px;">
+<a class="btn btn-ghost" href="https://tryhackme.com/p/bluerangersarchive" rel="noopener" target="_blank">TryHackMe ↗</a>
+<a class="btn btn-ghost" href="https://leetcode.com/u/karthikgalala/" rel="noopener" target="_blank">LeetCode ↗</a>
+</div>
+</div>
+<div class="term">
+
+<div class="term-bar">
+<div class="term-dot" style="background:#ef6b5e;"></div>
+<div class="term-dot" style="background:#e3b94a;"></div>
+<div class="term-dot" style="background:#5fe6ac;"></div>
+<div class="term-title">blue-team-monitor — live network telemetry</div>
+</div>
+<div class="term-body" id="termBody"></div>
+</div>
+</section>
+<!-- OBJECTIVE -->
+<section id="objective">
+<div class="sec-head">
+<span class="sec-cmd"><span class="p">$</span> cat objective.txt</span>
+</div>
+<div class="objective-block">
+<span class="out-label">// output</span>
+      Electronics and Communication Engineering student with practical experience in network security monitoring,
+      Linux log analysis, and SIEM operations using Splunk. Proficient with Wireshark, Nmap, and Kali Linux through
+      documented security projects and TryHackMe / Hack The Box labs. Seeking an entry-level SOC Analyst or Network
+      Security role to monitor security events, analyse logs, investigate incidents, and support enterprise security
+      operations.
+    </div>
+</section>
+<!-- EDUCATION -->
+<section id="education">
+<div class="sec-head">
+<span class="sec-cmd"><span class="p">$</span> ls education/</span>
+<h2 class="sec-title">Education</h2>
+</div>
+<div class="edu-list">
+<div class="edu-row">
+<div class="edu-date">2023–2027</div>
+<div>
+<div class="edu-degree">B.Tech, Electronics &amp; Communication Engineering</div>
+<div class="edu-school">Pragati Engineering College, Kakinada</div>
+</div>
+<div class="edu-score">CGPA 8.65/10</div>
+</div>
+<div class="edu-row">
+<div class="edu-date">2021–2023</div>
+<div>
+<div class="edu-degree">Intermediate (MPC)</div>
+<div class="edu-school">Sri Chaitanya Junior College, Visakhapatnam</div>
+</div>
+<div class="edu-score">94.6%</div>
+</div>
+<div class="edu-row">
+<div class="edu-date">2021</div>
+<div>
+<div class="edu-degree">SSC</div>
+<div class="edu-school">Sri Vani Vidyanikethan High School, Srikakulam</div>
+</div>
+<div class="edu-score">99%</div>
+</div>
+</div>
+</section>
+<!-- SKILLS -->
+<section id="skills">
+<div class="sec-head">
+<span class="sec-cmd"><span class="p">$</span> grep -r skills/</span>
+<h2 class="sec-title">Technical Skills</h2>
+</div>
+<div class="skills-grid">
+<div class="skill-cat">
+<h3>Cybersecurity</h3>
+<div class="chip-row">
+<span class="chip">SOC Operations</span><span class="chip">SIEM</span><span class="chip">Splunk</span>
+<span class="chip">Log Analysis</span><span class="chip">Windows Event Logs</span>
+<span class="chip">Threat Detection</span><span class="chip">Incident Response</span>
+<span class="chip">Vulnerability Assessment</span><span class="chip">IOC Analysis</span>
+<span class="chip">MITRE ATT&amp;CK</span>
+</div>
+</div>
+<div class="skill-cat">
+<h3>Networking</h3>
+<div class="chip-row">
+<span class="chip">TCP/IP</span><span class="chip">OSI Model</span><span class="chip">Routing</span>
+<span class="chip">Switching</span><span class="chip">DNS</span><span class="chip">DHCP</span>
+<span class="chip">HTTP/HTTPS</span><span class="chip">SSH</span><span class="chip">VLANs</span>
+<span class="chip">Subnetting</span>
+</div>
+</div>
+<div class="skill-cat">
+<h3>Tools</h3>
+<div class="chip-row">
+<span class="chip">Splunk Enterprise</span><span class="chip">Wireshark</span><span class="chip">Nmap</span>
+<span class="chip">Burp Suite CE</span><span class="chip">Git / GitHub</span>
+<span class="chip">Cisco Packet Tracer</span><span class="chip">VS Code</span>
+</div>
+</div>
+<div class="skill-cat">
+<h3>Programming &amp; OS</h3>
+<div class="chip-row">
+<span class="chip">Python</span><span class="chip">C</span><span class="chip">SQL</span>
+<span class="chip">Embedded C</span><span class="chip">Kali Linux</span><span class="chip">Ubuntu</span>
+<span class="chip">Windows</span>
+</div>
+</div>
+</div>
+</section>
+<!-- PROJECTS -->
+<section id="projects">
+<div class="sec-head">
+<span class="sec-cmd"><span class="p">$</span> ls -la projects/</span>
+<h2 class="sec-title">Projects</h2>
+</div>
+<div class="project-card" onclick="window.open('https://github.com/karthikgalala/splunk-ssh-log-analysis','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){window.open('https://github.com/karthikgalala/splunk-ssh-log-analysis','_blank');event.preventDefault();}" role="link" style="cursor:pointer;transition:transform .15s ease,border-color .15s ease" tabindex="0">
+<div class="project-head">
+<div class="project-title">SSH Log Analysis with Splunk on Kali Linux</div>
+<div class="project-tag">SIEM · SOC</div>
+<a class="btn btn-ghost" href="https://github.com/karthikgalala/splunk-ssh-log-analysis" onclick="event.stopPropagation();" rel="noopener" target="_blank">GitHub ↗</a></div>
+<ul>
+<li>Configured <code>/var/log/auth.log</code> as a Splunk data input in Splunk Enterprise.</li>
+<li>Simulated successful, failed, and brute-force SSH login attempts.</li>
+<li>Built SPL queries and dashboards to identify attacker IPs, login trends, and authentication events.</li>
+<li>Gained hands-on experience in SIEM, Linux log analysis, threat detection, and SOC investigations.</li>
+</ul>
+<div class="tool-tags"><span>Splunk Enterprise</span><span>Kali Linux</span><span>SPL</span><span>SSH</span></div>
+</div>
+<div class="project-card" onclick="window.open('https://github.com/karthikgalala/skillcraft-keylogger-poc','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){window.open('https://github.com/karthikgalala/skillcraft-keylogger-poc','_blank');event.preventDefault();}" role="link" style="cursor:pointer;transition:transform .15s ease,border-color .15s ease" tabindex="0">
+<div class="project-head">
+<div class="project-title">Python Keylogger — Security Research</div>
+<div class="project-tag">Endpoint · Malware</div>
+<a class="btn btn-ghost" href="https://github.com/karthikgalala/skillcraft-keylogger-poc" onclick="event.stopPropagation();" rel="noopener" target="_blank">GitHub ↗</a></div>
+<ul>
+<li>Developed a Python-based keylogger in a controlled environment for cybersecurity research.</li>
+<li>Captured and stored keystrokes locally to study attacker techniques and malware behavior.</li>
+<li>Analyzed Indicators of Compromise (IOCs) and researched detection and mitigation strategies.</li>
+<li>Improved understanding of endpoint security, malware analysis, and defensive monitoring.</li>
+</ul>
+<div class="tool-tags"><span>Python</span><span>pynput</span><span>Windows</span></div>
+</div>
+</section>
+<!-- CERTS -->
+<section id="certs">
+<div class="sec-head">
+<span class="sec-cmd"><span class="p">$</span> cat certifications.log</span>
+<h2 class="sec-title">Certifications &amp; Training</h2>
+</div>
+<div class="cert-grid">
+<div class="cert-card wide">
+<h4>SANS Institute — Skills Quest (NetWars Cyber Range)</h4>
+<ul class="cert-sub-list">
+<li>Hands-on cybersecurity challenges via SANS NetWars Cyber Range.</li>
+<li>Applied incident response, network security, and penetration testing skills.</li>
+</ul>
+<span class="badge">Global Rank: 127</span>
+</div>
+<div class="cert-card">
+<h4>Cisco Python Essentials 1 &amp; 2</h4>
+<p>Cisco Networking Academy</p>
+</div>
+<div class="cert-card">
+<h4>Google Cloud Cybersecurity Certificate</h4>
+<p>Google Cloud Skills Boost</p>
+</div>
+<div class="cert-card">
+<h4>Certified Social Engineering Defense Practitioner</h4>
+<p>The SecOps Group</p>
+</div>
+<div class="cert-card">
+<h4>Hack The Box — AI Red Teaming Path</h4>
+<p>In progress</p>
+<span class="badge" style="color:var(--mint); border-color: rgba(95,230,172,0.3);">Ongoing</span>
+</div>
+</div>
+</section>
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+<div class="sec-head">
+<span class="sec-cmd"><span class="p">$</span> tail achievements.log</span>
+<h2 class="sec-title">Achievements</h2>
+</div>
+<div class="ach-list">
+<div class="ach-row">
+<div class="ach-num">01</div>
+<p>Solved 250+ coding problems on LeetCode and HackerRank, strengthening problem-solving and programming skills.</p>
+</div>
+<div class="ach-row">
+<div class="ach-num">02</div>
+<p>Built and documented hands-on cybersecurity projects, including SSH Log Analysis with Splunk, a Home SOC Lab, and Python security research.</p>
+</div>
+<div class="ach-row">
+<div class="ach-num">03</div>
+<p>Regularly practices SIEM investigations, network packet analysis, and Linux log analysis using Splunk and Kali Linux.</p>
+</div>
+<div class="ach-row">
+<div class="ach-num">04</div>
+<p>Completed multiple <strong>TryHackMe</strong> rooms across Blue Team, SOC Level 1, and Network Security learning paths — profile: <a href="https://tryhackme.com/p/bluerangersarchive" rel="noopener" target="_blank">bluerangersarchive</a>.</p>
+</div>
+<div class="ach-row">
+<div class="ach-num">05</div>
+<p>Exploring <strong>Hack The Box's AI Red Teaming path</strong>, applying LLM security concepts such as prompt injection, model evasion, and adversarial input analysis to offensive/defensive AI use cases.</p>
+</div>
+</div>
+</section>
+</div>
+<footer id="contact">
+<div class="prompt-logo">karthik<span class="path">@soc</span>:~$ contact --all</div>
+<div class="footer-links">
+<a href="mailto:karthikgalala26@gmail.com">karthikgalala26@gmail.com</a>
+<a href="tel:+918885367146">+91 88853 67146</a>
+<a href="https://github.com/karthikgalala" onclick="return false;" rel="noopener" target="_blank">GitHub</a>
+<a href="https://www.linkedin.com/in/karthik-galala-08aa6b2b8/" rel="noopener" target="_blank">LinkedIn</a>
+<a href="https://www.credly.com/users/karthik-galala" rel="noopener" target="_blank">Credly</a>
+<a href="https://leetcode.com/u/karthikgalala/" rel="noopener" target="_blank">LeetCode</a>
+<a href="https://tryhackme.com/p/bluerangersarchive" rel="noopener" target="_blank">TryHackMe</a>
+</div>
+<div class="fine">© 2026 Karthik Galala · built to be read by humans and greppable by recruiters</div>
+</footer>
+<script>
+const lines = [
+  { ts: '08:45:11', ip: '127.0.0.1', text: 'whoami → karthik_galala', cls: 'ok' },
+  { ts: '08:45:13', ip: '127.0.0.1', text: 'Role: Network & Security Engineer', cls: 'ok' },
+
+  { ts: '08:46:02', ip: '10.10.1.14', text: 'Interface eth0 up — 1 Gbps full duplex', cls: 'ok' },
+  { ts: '08:46:07', ip: '10.10.1.1', text: 'Default gateway reachable', cls: 'ok' },
+  { ts: '08:46:12', ip: '8.8.8.8', text: 'ICMP latency stable — 12 ms avg', cls: 'ok' },
+
+  { ts: '08:47:01', ip: '10.10.2.45', text: 'DHCP lease assigned to workstation-23', cls: 'ok' },
+  { ts: '08:47:09', ip: '10.10.2.53', text: 'DNS query resolved: github.com', cls: 'ok' },
+  { ts: '08:47:18', ip: '10.10.2.53', text: 'DNS query resolved: tryhackme.com', cls: 'ok' },
+
+  { ts: '08:48:26', ip: '10.10.3.22', text: 'SSH session established for karthik', cls: 'ok' },
+  { ts: '08:48:39', ip: '10.10.3.22', text: 'Public-key authentication succeeded', cls: 'ok' },
+
+  { ts: '08:49:11', ip: '203.0.113.17', text: 'Firewall blocked inbound scan on port 22', cls: 'warn' },
+  { ts: '08:49:19', ip: '203.0.113.17', text: 'Repeated connection attempts detected', cls: 'warn' },
+  { ts: '08:49:25', ip: '203.0.113.17', text: 'ALERT: reconnaissance threshold exceeded', cls: 'crit' },
+  { ts: '08:49:31', ip: '203.0.113.17', text: 'Source added to temporary blocklist', cls: 'ok' },
+
+  { ts: '08:50:02', ip: '10.10.4.10', text: 'Splunk index=auth sourcetype=linux_secure', cls: 'ok' },
+  { ts: '08:50:14', ip: '10.10.4.10', text: 'Dashboard updated — failed logins, top IPs', cls: 'ok' },
+  { ts: '08:50:28', ip: '10.10.4.10', text: 'No critical authentication anomalies', cls: 'ok' },
+
+  { ts: '08:51:03', ip: '10.10.5.1', text: 'VPN tunnel established — AES-256', cls: 'ok' },
+  { ts: '08:51:17', ip: '10.10.5.1', text: 'Secure remote access active', cls: 'ok' },
+
+  { ts: '08:52:01', ip: '10.10.6.34', text: 'Nmap scan detected from internal lab host', cls: 'warn' },
+  { ts: '08:52:09', ip: '10.10.6.34', text: 'Activity classified as authorized testing', cls: 'ok' },
+
+  { ts: '08:53:22', ip: '10.10.7.20', text: 'Packet capture started on VLAN 20', cls: 'ok' },
+  { ts: '08:53:41', ip: '10.10.7.20', text: 'No suspicious outbound traffic observed', cls: 'ok' },
+
+  { ts: '08:54:10', ip: '127.0.0.1', text: 'Status: Monitoring • Investigating • Defending', cls: 'ok' },
+  { ts: '08:54:18', ip: '127.0.0.1', text: 'Karthik Galala — Blue Team Operations Online', cls: 'ok' }
+];
+
+const term = document.getElementById('termBody');
+let i = 0;
+
+function typeLine() {
+  const l = lines[i % lines.length];
+  const div = document.createElement('div');
+  div.className = 'term-line';
+  div.innerHTML = `<span class="ts">${l.ts}</span> <span class="ip">${l.ip}</span> — <span class="${l.cls}">${l.text}</span>`;
+  term.appendChild(div);
+
+  while (term.children.length > 10) {
+    term.removeChild(term.firstChild);
+  }
+
+  i++;
+  setTimeout(typeLine, 900);
+}
+
+typeLine();
+</script>
+</body>
+</html>
